@@ -1,13 +1,11 @@
-
 /*
-
-INPUT  ： 2 * ( 3 + 4 ) * 5
-
-OUTPUT ： 234+*5*
+    intput：2*(3+4)*5
+    output：70
+    intput：2+3*4
+    output：14
 
 case (is_number) :
   push back to post_vector
-
 case (is_operator)：
   若curr.piority比stack.top()大，一直pop並放入post_vector
   push curr to stack
@@ -18,6 +16,7 @@ case ('(')：
 case (')')：
   pop並push入post_vector，直到出現 '('
 
+
 */
 #include <iostream>
 #include <vector>
@@ -27,7 +26,7 @@ case (')')：
 using namespace std;
 
 bool is_operator(char x){
-    if(x=='+' || x=='-' || x=='*' || x=='/')
+    if(x=='+' || x=='-' || x=='*' || x=='/' || x=='%')
         return true;
     else
         return false;
@@ -39,16 +38,17 @@ int piority(char x){
         return 5;
     else if(x=='+'||x=='-')
         return 2;
+    else if(x=='%')
+        return 7;
     else
-        return 10;
+        return 0;
 }
 
 int main(){
     
     string temp;
     cin>>temp;
-    //cout<<temp.length()<<endl;
-    //1+2+3   2*(3+4)*5
+
     vector <char> word;
     vector <char> post;
     stack <char> content;
@@ -58,7 +58,8 @@ int main(){
     for(int i=0;i<word.size();i++){
         //get prefix head
         char x=word[i];
-        /****** Debuger
+        
+        /***********Debuger
         
         cout<<"now : "<<x<<endl;
         cout<<"post:";
@@ -72,16 +73,17 @@ int main(){
         cout<<endl;
         */
         
+        //各種判別case~ 
         if(x>='0' && x<='9'){
-            //cout<<"num"<<endl;
+            
             post.push_back(x);
         }
         else if( is_operator(x) ){
-            //cout<<"oper"<<endl;
-            while(!content.empty()&&piority(x) >= piority(content.top())   ){
+            
+            while(!content.empty()&&piority(content.top())>= piority(x) ){
                 
                 char y=content.top();
-                //cout<<"y:"<<y<<endl;
+                
                 content.pop();
                 post.push_back(y);
             }
@@ -105,9 +107,46 @@ int main(){
         content.pop();
     }
     
-    
+    /*
     for(int i=0;i<post.size();i++)
         cout<<post[i];
     cout<<endl;
+    */
+    stack <int> box;
+    for(int i=0;i<post.size();i++){
+        
+        if(post[i]>='0'&&post[i]<='9')
+            box.push(post[i]-'0');
+                    
+        else{
+            int a=box.top();
+            box.pop();
+            int b=box.top();
+            box.pop();
+            int c=0;
+            switch(post[i]){
+                case '+':
+                    c=a+b;
+                    break;
+                case '-':
+                    c=a-b;
+                    break;
+                case '*':
+                    c=a*b;
+                    break;
+                case '/':
+                    c=a/b;
+                    break;
+                case '%':
+                    c=a%b;
+                    break;
+            }
+            
+            box.push(c);
+        }
+    }
+    
+    cout<<box.top()<<endl;
+    
     return 0;
 }
